@@ -1,0 +1,30 @@
+#!/usr/bin/env groovy
+
+pipelineJob('customer-facade-apis') {
+    displayName('cmdm/customer-facade-apis')
+
+    logRotator {
+        numToKeep(10)
+        daysToKeep(14)
+        artifactNumToKeep(10)
+        artifactDaysToKeep(14)
+    }
+    properties {
+        disableConcurrentBuilds()
+    }
+    definition {
+        cpsScm {
+            lightweight(true)
+            scm {
+                git {
+                    remote {
+                        url('ssh://git@bitbucket.org/scholastic/cmdm-eks-jenkins-pipelines.git')
+                        credentials('cmdm-bitbucket-pem')
+                    }
+                    branches('*/master')
+                }
+            }
+            scriptPath('cicd/pipelines/customer_facade_apis_pipeline.jenkins')
+        }
+    }
+}

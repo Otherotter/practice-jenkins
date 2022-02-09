@@ -1,0 +1,89 @@
+#!/usr/bin/env groovy
+
+@Library('schl-cicd-shared-libraries@master') _
+
+node('jenkins-agent') {
+  pipelineConfigs = [
+    'businessUnit': 'cmdm',
+    'appName': 'customer-facade-apis',
+    'eksNamespacePrefix': 'cmdm',
+    'javaVersion': '1.8',
+    'gitReference': 'master',
+    'mvnArgs': '',
+    'environments': [
+      'dev': [
+         'enableAutoDeploy': false,
+         'cpuLimit': '1000m',
+         'memoryLimit': '2048Mi',
+         'serviceAccount': 'cmdm-dev-default',
+         'replicaCount': '1',
+         'healthPath': '/customer-facade-apis/health',
+         'livenessProbe': '35',
+         'readinessProbe': '35',
+         'keyValueStorePlatform': 'Consul-NonProd',
+         'keyValueStoreToken': '7614dd2f-2cfe-64ab-d938-b8a96e9b3bce',
+         'keyValueStorePath': 'cmdm/customer-facade-apis/dev',
+         'javaOpts': '-Xmx1024m -Dlog4j2.formatMsgNoLookups=True -javaagent:/newrelic/newrelic.jar -Dspring.profiles.active=dev',
+      ],
+      'qa': [
+         'enableAutoDeploy': false,
+         'cpuLimit': '1000m',
+         'memoryLimit': '2048Mi',
+         'serviceAccount': 'cmdm-qa-default',
+         'replicaCount': '3',
+         'healthPath': '/customer-facade-apis/health',
+         'livenessProbe': '35',
+         'readinessProbe': '35',
+         'keyValueStorePlatform': 'Consul-NonProd',
+         'keyValueStoreToken': '7614dd2f-2cfe-64ab-d938-b8a96e9b3bce',
+         'keyValueStorePath': 'cmdm/customer-facade-apis/qa',
+         'javaOpts': '-Xmx1024m -Dlog4j2.formatMsgNoLookups=True -javaagent:/newrelic/newrelic.jar -Dspring.profiles.active=qa',
+      ],
+      'perf': [
+         'enableAutoDeploy': false,
+         'cpuLimit': '1000m',
+         'memoryLimit': '2048Mi',
+         'serviceAccount': 'cmdm-perf-default',
+         'replicaCount': '1',
+         'healthPath': '/customer-facade-apis/health',
+         'livenessProbe': '35',
+         'readinessProbe': '35',
+         'keyValueStorePlatform': 'Consul-NonProd',
+         'keyValueStoreToken': '7614dd2f-2cfe-64ab-d938-b8a96e9b3bce',
+         'keyValueStorePath': 'cmdm/customer-facade-apis/perf',
+         'javaOpts': '-Xmx1024m -Dlog4j2.formatMsgNoLookups=True -javaagent:/newrelic/newrelic.jar -Dspring.profiles.active=perf',
+      ],
+      'stage': [
+         'enableAutoDeploy': false,
+         'cpuLimit': '1000m',
+         'memoryLimit': '2048Mi',
+         'serviceAccount': 'cmdm-stage-default',
+         'replicaCount': '1',
+         'healthPath': '/customer-facade-apis/health',
+         'livenessProbe': '35',
+         'readinessProbe': '35',
+         'keyValueStorePlatform': 'Consul-NonProd',
+         'keyValueStoreToken': '7614dd2f-2cfe-64ab-d938-b8a96e9b3bce',
+         'keyValueStorePath': 'cmdm/customer-facade-apis/stage',
+         'javaOpts': '-Xmx1024m -Dlog4j2.formatMsgNoLookups=True -javaagent:/newrelic/newrelic.jar -Dspring.profiles.active=stage',
+      ],
+      'prod': [
+         'enableAutoDeploy': false,
+         'cpuLimit': '1000m',
+         'memoryLimit': '2048Mi',
+         'serviceAccount': 'cmdm-prod-default',
+         'replicaCount': '1',
+         'healthPath': '/customer-facade-apis/health',
+         'livenessProbe': '35',
+         'readinessProbe': '35',
+         'keyValueStorePlatform': 'Consul-Prod',
+         'keyValueStoreToken': 'c18ebda7-ed9e-2a03-b458-3466b640a140',
+         'keyValueStorePath': 'cmdm/customer-facade-apis/prod',
+         'javaOpts': '-Xmx1024m -Dlog4j2.formatMsgNoLookups=True -javaagent:/newrelic/newrelic.jar -Dspring.profiles.active=prod',
+      ]
+    ]
+  ]
+
+  pipelineConfigs['resultedBuildConfig'] = buildJavaApp(pipelineConfigs)
+  deployJavaApp(pipelineConfigs)
+}
